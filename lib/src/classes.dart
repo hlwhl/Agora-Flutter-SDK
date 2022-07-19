@@ -48,16 +48,16 @@ class VideoDimensions {
   ///
   ///
   @JsonKey(includeIfNull: false)
-  int? width;
+  final int? width;
 
   ///
   /// The height (pixels) of the video.
   ///
   @JsonKey(includeIfNull: false)
-  int? height;
+  final int? height;
 
   /// Constructs the [VideoDimensions].
-  VideoDimensions({
+  const VideoDimensions({
     this.width,
     this.height,
   });
@@ -2586,4 +2586,93 @@ class ContentInspectConfig {
 
   /// @nodoc
   Map<String, dynamic> toJson() => _$ContentInspectConfigToJson(this);
+}
+
+/// @nodoc
+@JsonSerializable(explicitToJson: true)
+class SpatialAudioParams {
+  /// @nodoc
+  @JsonKey(name: 'speaker_azimuth')
+  final double? speakerAzimuth;
+
+  /// @nodoc
+  @JsonKey(name: 'speaker_elevation')
+  final double? speakerElevation;
+
+  /// @nodoc
+  @JsonKey(name: 'speaker_distance')
+  final double? speakerDistance;
+
+  /// @nodoc
+  @JsonKey(name: 'speaker_orientation')
+  final int? speakerOrientation;
+
+  /// @nodoc
+  @JsonKey(name: 'enable_blur')
+  final bool? enableBlur;
+
+  /// @nodoc
+  @JsonKey(name: 'enable_air_absorb')
+  final bool? enableAirAbsorb;
+
+  /// Constructs the [SpatialAudioParams].
+  const SpatialAudioParams(
+      {this.speakerAzimuth,
+      this.speakerElevation,
+      this.speakerDistance,
+      this.speakerOrientation,
+      this.enableBlur,
+      this.enableAirAbsorb});
+
+  factory SpatialAudioParams.fromJson(Map<String, dynamic> json) =>
+      _$SpatialAudioParamsFromJson(json);
+  Map<String, dynamic> toJson() => _$SpatialAudioParamsToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class ScreenAudioParameters {
+  final int? captureSignalVolume;
+
+  const ScreenAudioParameters(this.captureSignalVolume);
+
+  factory ScreenAudioParameters.fromJson(Map<String, dynamic> json) =>
+      _$ScreenAudioParametersFromJson(json);
+  Map<String, dynamic> toJson() => _$ScreenAudioParametersToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class ScreenVideoParameters {
+  final VideoDimensions? dimensions;
+  final int? frameRate;
+  final int? bitrate;
+  final VideoContentHint? contentHint;
+
+  const ScreenVideoParameters(
+      {this.dimensions, this.frameRate, this.bitrate, this.contentHint});
+
+  factory ScreenVideoParameters.fromJson(Map<String, dynamic> json) =>
+      _$ScreenVideoParametersFromJson(json);
+  Map<String, dynamic> toJson() => _$ScreenVideoParametersToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class ScreenCaptureParameters2 {
+  final bool? captureAudio;
+
+  final ScreenAudioParameters? audioParams;
+
+  final bool? captureVideo;
+
+  final ScreenVideoParameters? videoParams;
+
+  const ScreenCaptureParameters2({
+    this.captureAudio,
+    this.audioParams,
+    this.captureVideo,
+    this.videoParams,
+  });
+
+  factory ScreenCaptureParameters2.fromJson(Map<String, dynamic> json) =>
+      _$ScreenCaptureParameters2FromJson(json);
+  Map<String, dynamic> toJson() => _$ScreenCaptureParameters2ToJson(this);
 }
