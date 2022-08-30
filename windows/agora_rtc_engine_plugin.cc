@@ -25,6 +25,8 @@
 #include "iris_rtc_raw_data.h"
 #include "iris_video_processor.h"
 
+#include "include/raw_engine/IAgoraRtcEngine.h"
+
 namespace
 {
   using namespace flutter;
@@ -212,6 +214,31 @@ namespace
       auto texture_id = factory_->CreateTextureRenderer(
           engine(arguments)->raw_data()->buffer_manager());
       result->Success(EncodableValue(texture_id));
+    }
+    else if (method.compare("getScreenShareSources") == 0)
+    {
+      auto engine = reinterpret_cast<agora::rtc::IRtcEngine *>(engine_main_->rtc_engine());
+      SIZE size;
+      size.cx = 225;
+      size.cy = 116;
+      auto infos = engine->getScreenCaptureSources(size, size, false);
+      std::vector<flutter::EncodableValue> resultData;
+      for (unsigned int i = 0; i < infos->getCount(); i++) {
+        agora::rtc::ScreenCaptureSourceInfo info = infos->getSourceInfo(i);
+        auto image = info.thumbImage;
+        std::vector<uint8_t> vimg(image.buffer, image.buffer + image.length);
+
+        std::map<flutter::EncodableValue, flutter::EncodableValue> item;
+        
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("id"), info.sourceId));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumb"), flutter::EncodableValue(vimg)));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbWidth"), (int32_t)image.width));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbHeight"), (int32_t)image.height));
+
+        resultData.emplace_back(item);
+      }
+      infos->release();
+      result->Success(resultData);
     }
     else if (method.compare("destroyTextureRender") == 0)
     {

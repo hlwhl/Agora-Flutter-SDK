@@ -78,6 +78,12 @@ class RtcEngineImpl with MediaRecorderImplMixin implements RtcEngine {
     return _screenShareHelper!;
   }
 
+  @override
+  Future<List?> getScreenShareSources() async {
+    List? data = await methodChannel.invokeMethod("getScreenShareSources");
+    return data;
+  }
+
   final RtcDeviceManager _deviceManager = RtcDeviceManager();
 
   ///
