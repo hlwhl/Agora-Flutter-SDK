@@ -1,3 +1,6 @@
+#pragma warning(disable: 4302)
+#pragma warning(disable: 4311)
+
 #include "include/agora_rtc_engine/agora_rtc_engine_plugin.h"
 #include "include/agora_rtc_engine/call_api_method_call_handler.h"
 
@@ -230,7 +233,7 @@ namespace
 
         std::map<flutter::EncodableValue, flutter::EncodableValue> item;
         
-        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("id"), info.sourceId));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("id"), (int32_t)info.sourceId));
         item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumb"), flutter::EncodableValue(vimg)));
         item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbWidth"), (int32_t)image.width));
         item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbHeight"), (int32_t)image.height));
