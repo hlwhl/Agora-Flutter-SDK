@@ -222,9 +222,9 @@ namespace
     {
       auto engine = reinterpret_cast<agora::rtc::IRtcEngine *>(engine_main_->rtc_engine());
       SIZE size;
-      size.cx = 225;
-      size.cy = 116;
-      auto infos = engine->getScreenCaptureSources(size, size, false);
+      size.cx = 225 * 2;
+      size.cy = 116 * 2;
+      auto infos = engine->getScreenCaptureSources(size, size, true);
       std::vector<flutter::EncodableValue> resultData;
       for (unsigned int i = 0; i < infos->getCount(); i++) {
         agora::rtc::ScreenCaptureSourceInfo info = infos->getSourceInfo(i);
