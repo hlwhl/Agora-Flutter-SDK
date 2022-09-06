@@ -228,15 +228,22 @@ namespace
       std::vector<flutter::EncodableValue> resultData;
       for (unsigned int i = 0; i < infos->getCount(); i++) {
         agora::rtc::ScreenCaptureSourceInfo info = infos->getSourceInfo(i);
-        auto image = info.thumbImage;
-        std::vector<uint8_t> vimg(image.buffer, image.buffer + image.length);
+        auto thumbImage = info.thumbImage;
+        std::vector<uint8_t> vimgThumb(thumbImage.buffer, thumbImage.buffer + thumbImage.length);
+
+        auto iconImage = info.iconImage;
+        std::vector<uint8_t> vimgIcon(iconImage.buffer, iconImage.buffer + iconImage.length);
 
         std::map<flutter::EncodableValue, flutter::EncodableValue> item;
         
         item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("id"), (int32_t)info.sourceId));
-        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumb"), flutter::EncodableValue(vimg)));
-        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbWidth"), (int32_t)image.width));
-        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbHeight"), (int32_t)image.height));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumb"), flutter::EncodableValue(vimgThumb)));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbWidth"), (int32_t)thumbImage.width));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("thumbHeight"), (int32_t)thumbImage.height));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("icon"), flutter::EncodableValue(vimgIcon)));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("iconWidth"), (int32_t)iconImage.width));
+        item.insert(std::map<flutter::EncodableValue, flutter::EncodableValue> ::value_type(flutter::EncodableValue("iconHeight"), (int32_t)iconImage.height));
+
 
         resultData.emplace_back(item);
       }
