@@ -55,6 +55,8 @@ class _State extends State<ScreenSharing> {
     await _engine.setClientRole(ClientRole.Broadcaster);
     await _enumerateDisplayAndWindow();
     await _enumerateRecording();
+    var result = await _engine.getScreenShareSources();
+    print("done");
   }
 
   _addListeners() {
