@@ -1844,11 +1844,15 @@ class RtcEngineImpl with MediaRecorderImplMixin implements RtcEngine {
   }
 
   @override
-  Future<void> stopScreenCapture() {
-    return _invokeMethod('callApi', {
+  Future<void> stopScreenCapture() async {
+    await _invokeMethod('callApi', {
       'apiType': ApiTypeEngine.kEngineStopScreenCapture.index,
       'params': jsonEncode({}),
     });
+
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      await setVideoSource();
+    }
   }
 
   @override
@@ -2078,6 +2082,13 @@ class RtcEngineImpl with MediaRecorderImplMixin implements RtcEngine {
         'uid': uid,
         'spatial_audio_params': spatialAudioParams.toJson(),
       }),
+    });
+  }
+
+  Future<void> setVideoSource() {
+    return _invokeMethod('callApi', {
+      'apiType': ApiTypeEngine.kEngineSetVideoSource.index,
+      'params': jsonEncode({}),
     });
   }
 }
