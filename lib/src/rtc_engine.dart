@@ -97,8 +97,6 @@ abstract class RtcEngine {
   ///
   Future<RtcEngine> getScreenShareHelper({String? appGroup});
 
-  Future<void> getScreenShareSources();
-
   /// @nodoc
   @protected
   Future<void> initialize(RtcEngineContext config);
