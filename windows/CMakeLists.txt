@@ -26,6 +26,11 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.plugin_dev")
     DOWNLOAD_SDK_BY_URL("${IRIS_SDK_DOWNLOAD_SDK_BY_URL}" "${IRIS_DOWNLOAD_PATH}")
 endif()
 
+if(WIN32)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+endif()
+
 add_library(${PLUGIN_NAME} SHARED
   "agora_rtc_channel_plugin.cc"
   "agora_rtc_device_manager_plugin.cc"
