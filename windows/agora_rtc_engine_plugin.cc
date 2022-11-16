@@ -110,6 +110,22 @@ namespace
     AgoraRtcEnginePlugin *plugin_;
     bool sub_process_;
   };
+  
+  template <typename T>
+  static bool GetValueFromEncodableMap(const flutter::EncodableMap *map,
+                                       const char *key, T &out)
+  {
+    auto iter = map->find(flutter::EncodableValue(key));
+    if (iter != map->end() && !iter->second.IsNull())
+    {
+      if (auto *value = std::get_if<T>(&iter->second))
+      {
+        out = *value;
+        return true;
+      }
+    }
+    return false;
+  }
 
   bool isSubProcess(EncodableMap &arguments)
   {
@@ -256,8 +272,20 @@ namespace
     }
     else if (method.compare("destroyTextureRender") == 0)
     {
-      auto arguments = std::get<EncodableMap>(*method_call.arguments());
-      auto texture_id = std::get<int64_t>(arguments[EncodableValue("id")]);
+      const auto *arguments = std::get_if<EncodableMap>(method_call.arguments());
+      if (!arguments)
+      {
+        result->Error("Invalid arguments", "Invalid argument type.");
+        return;
+      }
+
+      int64_t texture_id;
+      if (!GetValueFromEncodableMap(arguments, "id", texture_id))
+      {
+        result->Error("Invalid arguments", "No id provided.");
+        return;
+      }
+      
       factory_->DestoryTextureRenderer(texture_id);
       result->Success();
     }
