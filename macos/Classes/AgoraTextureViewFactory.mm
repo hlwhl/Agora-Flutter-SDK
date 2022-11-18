@@ -10,7 +10,6 @@ using namespace agora::iris;
 @property(nonatomic, assign) int64_t textureId;
 @property(nonatomic, strong) FlutterMethodChannel *channel;
 @property(nonatomic) CVPixelBufferRef buffer_cache;
-@property(nonatomic) CVPixelBufferRef buffer_temp;
 @property(nonatomic) IrisVideoFrameBufferManager *renderer;
 @property(nonatomic, strong) dispatch_semaphore_t lock;
 
@@ -32,27 +31,32 @@ public:
                             bool resize) override {
     @autoreleasepool {
       TextureRenderer *renderer = (__bridge TextureRenderer *)renderer_;
-      CVPixelBufferRef buffer = NULL;
+      CVPixelBufferRef buffer = renderer.buffer_cache;
       NSDictionary* dic = @{
           (__bridge NSString*)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA),
           (__bridge NSString*)kCVPixelBufferIOSurfacePropertiesKey: @{},
           (__bridge NSString*)kCVPixelBufferOpenGLCompatibilityKey : @YES,
           (__bridge NSString*)kCVPixelBufferMetalCompatibilityKey : @YES,
       };
-      CVPixelBufferCreate(kCFAllocatorDefault, video_frame.width,
-                          video_frame.height, kCVPixelFormatType_32BGRA,
-                          (__bridge CFDictionaryRef)dic, &buffer);
+
+      dispatch_semaphore_wait(renderer.lock, DISPATCH_TIME_FOREVER);
+
+      if (renderer.buffer_cache != NULL && resize) {
+                  CVBufferRelease(renderer.buffer_cache);
+                  renderer.buffer_cache = NULL;
+      }
+
+      if (renderer.buffer_cache == NULL) {
+            CVPixelBufferCreate(kCFAllocatorDefault, video_frame.width,
+                   video_frame.height, kCVPixelFormatType_32BGRA,
+                   (__bridge CFDictionaryRef)dic, &buffer);
+      }
 
       CVPixelBufferLockBaseAddress(buffer, 0);
       void *copyBaseAddress = CVPixelBufferGetBaseAddress(buffer);
       memcpy(copyBaseAddress, video_frame.y_buffer,
              video_frame.y_buffer_length);
       CVPixelBufferUnlockBaseAddress(buffer, 0);
-
-      dispatch_semaphore_wait(renderer.lock, DISPATCH_TIME_FOREVER);
-      if (renderer.buffer_cache) {
-        CVPixelBufferRelease(renderer.buffer_cache);
-      }
       renderer.buffer_cache = buffer;
       dispatch_semaphore_signal(renderer.lock);
 
@@ -132,10 +136,9 @@ public:
 
 - (CVPixelBufferRef)copyPixelBuffer {
   dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
-  self.buffer_temp = self.buffer_cache;
-  CVPixelBufferRetain(self.buffer_temp);
+  CVPixelBufferRef buffer_temp = CVPixelBufferRetain(self.buffer_cache);
   dispatch_semaphore_signal(self.lock);
-  return self.buffer_temp;
+  return buffer_temp;
 }
 
 - (void)onTextureUnregistered:(NSObject<FlutterTexture> *)texture {
